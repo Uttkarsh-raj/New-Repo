@@ -2,6 +2,7 @@ package helper
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -93,4 +94,32 @@ func UpdateTokens(signedToken, signedRefreshToken, email string) {
 		log.Panic(err)
 		return
 	}
+}
+
+func VerifyToken(tokenString string, allowedRoles []string) (*jwt.Token, error) {
+	token, err := jwt.ParseWithClaims(
+		tokenString,
+		&SignedDetails{},
+		func(token *jwt.Token) (interface{}, error) {
+			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+				return nil, fmt.Errorf("error: Unexpected signing method: %v", token.Header["alg"])
+			}
+			return []byte(SECRET_KEY), nil
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	claim, ok := token.Claims.(*SignedDetails)
+	if !ok || !token.Valid {
+		return nil, fmt.Errorf("error: Invalid Token")
+	}
+
+	for _, val := range allowedRoles {
+		if claim.Type == val {
+			return token, nil
+		}
+	}
+	return nil, fmt.Errorf("error: Permission denied !! You don't have permissions to access this data")
 }

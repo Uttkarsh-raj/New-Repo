@@ -38,7 +38,6 @@ func SignUpUser() gin.HandlerFunc {
 
 		userCount, err := userCollection.CountDocuments(ctx, bson.M{"email": user.Email})
 		if err != nil {
-			// fmt.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"message": "Error occured while checking for the email", "success": false})
 			return
 		}
@@ -79,6 +78,7 @@ func SignUpUser() gin.HandlerFunc {
 		c.JSON(http.StatusOK, gin.H{"success": true, "data": response})
 	}
 }
+
 func LogInUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
