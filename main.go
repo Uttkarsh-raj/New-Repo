@@ -11,6 +11,10 @@ import (
 func main() {
 	fmt.Println("Starting server...")
 	server := gin.New()
+	server.Use(gin.Logger())
 	routes.RegisterRoutes(server)
+	routes.RegisterGenericRoutes(server)
+	routes.RegisterModeratorRoutes(server)
+	routes.RegisterAdminRoutes(server)
 	log.Fatal(server.Run(":3000"))
 }

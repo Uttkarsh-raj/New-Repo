@@ -36,6 +36,7 @@ func GetAllUsers() gin.HandlerFunc {
 				Email:     *user.Email,
 				FirstName: *user.First_name,
 				LastName:  *user.Last_name,
+				Type:      user.Type,
 			}
 			users = append(users, filteredUser)
 		}
@@ -81,7 +82,7 @@ func UpdateUser() gin.HandlerFunc {
 			return
 		}
 
-		var updates map[string]interface{}
+		var updates map[string]string
 		if err = json.NewDecoder(ctx.Request.Body).Decode(&updates); err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{"success": false, "error": "Invalid request body"})
 			return
@@ -94,7 +95,7 @@ func UpdateUser() gin.HandlerFunc {
 		}
 		delete(updates, "_id")
 
-		if email, ok := updates["email"].(string); ok && email != "" {
+		if email, ok := updates["email"]; ok && email != "" {
 			count, err := userCollection.CountDocuments(c, bson.M{"email": email})
 			if err != nil {
 				ctx.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})

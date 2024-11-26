@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -16,10 +15,10 @@ func CheckAuthAndPermissions(allowedRoles []string) gin.HandlerFunc {
 			c.AbortWithStatus(400)
 			return
 		}
-		fmt.Println(tokenString[6:])
-		_, err := helper.VerifyToken(tokenString[6:], allowedRoles)
+		// fmt.Println(tokenString[7:])
+		_, err := helper.VerifyToken(tokenString[7:], allowedRoles)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "Error verifying the tokne: " + err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "Error verifying the token: " + err.Error()})
 			c.AbortWithStatus(400)
 			return
 		}

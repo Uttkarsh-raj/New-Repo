@@ -121,5 +121,5 @@ func VerifyToken(tokenString string, allowedRoles []string) (*jwt.Token, error) 
 			return token, nil
 		}
 	}
-	return nil, fmt.Errorf("error: Permission denied !! You don't have permissions to access this data")
+	return nil, fmt.Errorf("error: Permission denied !! You don't have permissions to access/modify this data")
 }
