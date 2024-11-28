@@ -34,9 +34,9 @@ This approach not only strengthens the application’s security posture but also
 <!--About the Project-->
   
 ## About The Project
-
+<!--
 ### Demo
-
+-->
 <br>
 
 ### Key Concepts
@@ -85,12 +85,12 @@ To get started with your Golang application, follow these steps:
 1. Create an image from the docker file:
    
    ```
-   docker build -t gossipcache .
+   docker build -t rbac .
    ```
 3. Run this on your terminal (needs docker to be preinstalled):
    
    ```
-   docker run -p 3000:3000 -it gossipcache
+   docker run -p 3000:3000 -it rbac
    ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -243,17 +243,24 @@ To get started with your Golang application, follow these steps:
     ```
 - **DELETE "/delete/:id"**
   * This action can be executed by an `ADMIN` user.
+
+### Frontend Routes
+- **"/home"** - Home page of the application.
+- **"/register"** - Register page for the application.
+- **"/loginPage"** - Login page for the application.
   
 ## Screenshots:
-<!--
+
 <br>
 <center>
-<img width="1000" src="https://github.com/Uttkarsh-raj/Gossip-Cache/assets/106571927/1534f7e3-afc4-47ca-9643-e3bef4d3dd79"></img>
+<img width="1000" src="https://github.com/user-attachments/assets/22a6033c-bf70-4e4c-a4cb-0f27d67c58d6"></img>
 <br>
-<img width="1000" src="https://github.com/Uttkarsh-raj/Gossip-Cache/assets/106571927/01cd3706-568a-44e3-861c-653756395013"></img>
+<img width="1000" src="https://github.com/user-attachments/assets/03d9c1cb-1f66-42f7-9207-75212ba4ba93"></img>
+ <br>
+<img width="1000" src="https://github.com/user-attachments/assets/cb366fc7-f99f-43d6-88c0-78fbbae24aec"></img>
 </center>
 <br>
--->
+
 
 <!--CONTRIBUTING-->
 
