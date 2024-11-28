@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Form</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" crossorigin="anonymous">
+</head>
+<body>
+    <form style="padding: 40px;" onsubmit="handleSubmit(event)">
+        <div class="form-group">
+            <label for="exampleFirstName">First Name</label>
+            <input type="text" class="form-control" id="exampleFirstName" placeholder="Enter first name">
+        </div>
+
+        <div class="form-group">
+            <label for="exampleLastName">Last Name</label>
+            <input type="text" class="form-control" id="exampleLastName" placeholder="Enter last name">
+        </div>
+
+        <div class="form-group">
+            <label for="exampleInputEmail1">Email address</label>
+            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+            <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+        </div>
+
+        <div class="form-group">
+            <label for="exampleInputPassword1">Password</label>
+            <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+        </div>
+
+        <div class="form-group form-type">
+            <label for="userRole" class="form-label">Select Role:</label>
+            <div id="userRole" class="d-flex gap-3">
+                <div class="form-check form-check-inline">
+                    <input type="radio" class="form-check-input" name="role" id="userRoleUser" value="User">
+                    <label class="form-check-label" for="userRoleUser">User</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input type="radio" class="form-check-input" name="role" id="userRoleModerator" value="Moderator">
+                    <label class="form-check-label" for="userRoleModerator">Moderator</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input type="radio" class="form-check-input" name="role" id="userRoleAdmin" value="Admin">
+                    <label class="form-check-label" for="userRoleAdmin">Admin</label>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Register</button>
+        <a href="/loginPage">Login</a>
+    </form>
+
+    <script>
+        async function handleSubmit(event) {
+            event.preventDefault();
+            
+            const data = {
+                first_name: document.getElementById('exampleFirstName').value,
+                last_name: document.getElementById('exampleLastName').value,
+                email: document.getElementById('exampleInputEmail1').value,
+                password: document.getElementById('exampleInputPassword1').value,
+                type: document.querySelector('input[name="role"]:checked')?.value // Get selected radio button value
+            };
+
+            console.log("User Data:", data);
+
+            try {
+                const response = await fetch('http://localhost:3000/signup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status} ${response.statusText}`);
+                }
+
+                const responseData = await response.json();
+                console.log("Response Data:", responseData);
+                localStorage.setItem('token',  responseData?.data.user?.token)
+                // Redirect to home page
+                window.location.href = '/home';
+            } catch (error) {
+                console.error("Error during registration:", error);
+            }
+        }
+    </script>
+</body>
+</html>

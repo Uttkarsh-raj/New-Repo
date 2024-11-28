@@ -15,10 +15,9 @@ func CheckAuthAndPermissions(allowedRoles []string) gin.HandlerFunc {
 			c.AbortWithStatus(400)
 			return
 		}
-		// fmt.Println(tokenString[7:])
 		_, err := helper.VerifyToken(tokenString[7:], allowedRoles)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "Error verifying the token: " + err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": err.Error()})
 			c.AbortWithStatus(400)
 			return
 		}

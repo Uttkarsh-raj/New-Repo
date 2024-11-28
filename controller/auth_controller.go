@@ -94,7 +94,7 @@ func LogInUser() gin.HandlerFunc {
 
 		err = userCollection.FindOne(ctx, bson.M{"email": user.Email}).Decode(&foundUser)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"message": "login or password is incorrect", "success": false})
+			c.JSON(http.StatusBadRequest, gin.H{"message": "email or password is incorrect", "success": false})
 			return
 		}
 
@@ -104,7 +104,7 @@ func LogInUser() gin.HandlerFunc {
 			return
 		}
 		if !passwordIsValid {
-			c.JSON(http.StatusInternalServerError, gin.H{"message": msg, "success": false})
+			c.JSON(http.StatusBadRequest, gin.H{"message": msg, "success": false})
 			return
 		}
 
@@ -116,6 +116,8 @@ func LogInUser() gin.HandlerFunc {
 
 		helper.UpdateTokens(token, refreshToken, *foundUser.Email)
 		*foundUser.Password = ""
+		*(foundUser.Token) = token
+		*(foundUser.Refresh_token) = refreshToken
 
 		c.JSON(http.StatusOK, gin.H{
 			"success": true,

@@ -12,6 +12,7 @@ func main() {
 	fmt.Println("Starting server...")
 	server := gin.New()
 	server.Use(gin.Logger())
+	routes.RegisterFrontend(server)
 	routes.RegisterRoutes(server)
 	routes.RegisterGenericRoutes(server)
 	routes.RegisterModeratorRoutes(server)

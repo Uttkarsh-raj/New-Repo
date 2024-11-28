@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <link rel="stylesheet" href="styles3.css">
+</head>
+
+<body>
+    <div style = "padding: .7rem; display: flex; justify-content: space-between; align-items: center;">
+        <h3>Users List</h3>
+        <button  class=" btn btn-danger" onclick="logout()">Logout</button>
+    </div>
+    <div class="userlist"></div>
+    <script>
+        const logout = () => {
+            localStorage.setItem("token", "")
+            window.location.href = "/loginPage"
+        }
+        const token = localStorage.getItem("token")
+        if(!token  || token.length===0){
+            window.location.href = "/loginPage"
+        }
+        const userListContainer = document.querySelector('.userlist')
+        // userListContainer.classList.add("user-list", "mt-4");
+        function renderUserList(users) {
+            userListContainer.innerHTML = ""; // Clear any existing content
+
+            const userList = document.createElement("ul");
+            userList.classList.add("list-group");
+
+            users.forEach((user) => {
+                const listItem = document.createElement("li");
+                listItem.classList.add("list-group-item", "d-flex", "justify-content-between", "align-items-start");
+
+                listItem.innerHTML = `
+      <div>
+        <strong>Name:</strong> ${user.first_name} ${user.last_name}<br>
+        <strong>Email:</strong> ${user.email}<br>
+        <strong>Type:</strong> ${user.type}
+      </div>
+      <div>
+        <button class="btn btn-danger btn-sm me-2 delete-btn" data-id="${user.id}">Delete</button>
+        <button class="btn btn-primary btn-sm update-btn" data-id="${user.id}" data-first-name="${user.first_name}" data-last-name="${user.last_name}" data-email="${user.email}" data-type="${user.type}">Update</button>
+      </div>
+    `;
+
+                userList.appendChild(listItem);
+            });
+
+            userListContainer.appendChild(userList);
+
+            // Add event listeners for delete buttons
+            const deleteButtons = userListContainer.querySelectorAll(".delete-btn");
+            deleteButtons.forEach((button) => {
+                button.addEventListener("click", async (event) => {
+                    event.preventDefault()
+                    const userId = event.target.getAttribute("data-id");
+                    try {
+                        const response = await fetch(`http://localhost:3000/delete/${userId}`, {
+                            method: "DELETE",
+                            headers: {
+                                Authorization: `Bearer ${localStorage.getItem("token")}`,
+                            },
+                        });
+                        const res = await response.json()
+                        if (!response.ok) {
+                            throw new Error(res.message);
+                        }
+
+                        alert("User deleted successfully!");
+                        window.location.href = "/home"
+                    } catch (error) {
+                        console.error("Error deleting user:", error);
+                        alert(error.toString().substring(7, error.length));
+                    }
+                });
+            });
+
+            // Add event listeners for update buttons
+            const updateButtons = userListContainer.querySelectorAll(".update-btn");
+            updateButtons.forEach((button) => {
+                button.addEventListener("click", (event) => {
+                    const userId = button.getAttribute("data-id");
+                    const firstName = button.getAttribute("data-first-name");
+                    const lastName = button.getAttribute("data-last-name");
+                    const email = button.getAttribute("data-email");
+                    const type = button.getAttribute("data-type");
+
+                    showUpdateModal(userId, firstName, lastName, email, type);
+                });
+            });
+        }
+
+        // Function to display the update modal
+        function showUpdateModal(id, firstName, lastName, email, type) {
+            const modal = document.createElement("div");
+            modal.classList.add("modal", "fade");
+            modal.tabIndex = -1;
+            modal.innerHTML = `
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Update User</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="updateForm">
+            <div class="mb-3">
+              <label for="updateFirstName" class="form-label">First Name</label>
+              <input type="text" class="form-control" id="updateFirstName" value="${firstName}">
+            </div>
+            <div class="mb-3">
+              <label for="updateLastName" class="form-label">Last Name</label>
+              <input type="text" class="form-control" id="updateLastName" value="${lastName}">
+            </div>
+            <div class="mb-3">
+              <label for="updateEmail" class="form-label">Email</label>
+              <input disabled type="email" class="form-control" id="updateEmail" value="${email}">
+            </div>
+            <div class="mb-3">
+              <label for="updateType" class="form-label">Type</label>
+              <input disabled type="text" class="form-control" id="updateType" value="${type}">
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" id="saveUpdateBtn">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+            document.body.appendChild(modal);
+
+            const bootstrapModal = new bootstrap.Modal(modal);
+            bootstrapModal.show();
+
+            modal.querySelector("#saveUpdateBtn").addEventListener("click", async (e) => {
+                e.preventDefault()
+                const updatedDetails = {
+                    first_name: modal.querySelector("#updateFirstName").value,
+                    last_name: modal.querySelector("#updateLastName").value,
+                    //   email: modal.querySelector("#updateEmail").value,
+                    //   type: modal.querySelector("#updateType").value,
+                };
+
+                try {
+                    const response = await fetch(`http://localhost:3000/update/${id}`, {
+                        method: "PATCH",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${localStorage.getItem("token")}`,
+                        },
+                        body: JSON.stringify(updatedDetails),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Failed to update user with ID ${id}`);
+                    }
+
+                    alert("User updated successfully!");
+                    bootstrapModal.hide();
+                    modal.remove();
+                    window.location.href = "/home"; // Refresh user list
+                } catch (error) {
+                    console.error("Error updating user:", error);
+                    alert("Failed to update user.");
+                }
+            });
+        }
+
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const profileForm = document.getElementById("profileForm");
+            async function fetchUserDetails() {
+                const token = 'Bearer ' + localStorage.getItem('token')
+                console.log(token)
+                try {
+                    const response = await fetch('http://localhost:3000/users', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: token
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Error: ${response.status} ${response.statusText}`);
+                    }
+
+                    const data = await response.json();
+                    console.log(data.data.users);
+                    renderUserList(data.data.users)
+                    return data;
+                } catch (error) {
+                    console.error("Error fetching user details:", error);
+                }
+            }
+            const userDetails = fetchUserDetails();
+            document.getElementById("first name").value = userDetails.firstName;
+            document.getElementById("last name").value = userDetails.lastName;
+            document.getElementById("email").value = userDetails.email;
+            document.getElementById("user type").value = userDetails.userType;
+            profileForm.addEventListener("submit", (event) => {
+                event.preventDefault();
+
+                const updatedDetails = {
+                    firstName: document.getElementById("first name").value,
+                    lastName: document.getElementById("last name").value,
+                    email: document.getElementById("email").value,
+                    userType: document.getElementById("user type").value,
+                };
+
+                function updateUserDetails(details) {
+                    console.log("Updated user details:", details);
+                    alert("Profile updated successfully!");
+                }
+
+                updateUserDetails(updatedDetails);
+            });
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>

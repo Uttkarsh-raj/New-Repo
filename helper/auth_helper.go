@@ -102,18 +102,18 @@ func VerifyToken(tokenString string, allowedRoles []string) (*jwt.Token, error) 
 		&SignedDetails{},
 		func(token *jwt.Token) (interface{}, error) {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-				return nil, fmt.Errorf("error: Unexpected signing method: %v", token.Header["alg"])
+				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 			}
 			return []byte(SECRET_KEY), nil
 		},
 	)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("incorrect password")
 	}
 
 	claim, ok := token.Claims.(*SignedDetails)
 	if !ok || !token.Valid {
-		return nil, fmt.Errorf("error: Invalid Token")
+		return nil, fmt.Errorf("invalid token")
 	}
 
 	for _, val := range allowedRoles {
@@ -121,5 +121,5 @@ func VerifyToken(tokenString string, allowedRoles []string) (*jwt.Token, error) 
 			return token, nil
 		}
 	}
-	return nil, fmt.Errorf("error: Permission denied !! You don't have permissions to access/modify this data")
+	return nil, fmt.Errorf("permission denied !! You don't have permissions to access/modify this data")
 }
