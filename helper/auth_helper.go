@@ -38,7 +38,7 @@ func HashPassword(pass string) (string, error) {
 func VerifyPassword(userPass, hashPass string) (bool, string, error) {
 	err := bcrypt.CompareHashAndPassword([]byte(hashPass), []byte(userPass))
 	if err != nil {
-		return false, "Incorrect email or Password.", err
+		return false, "Incorrect email or Password.", fmt.Errorf("incorrect email or password")
 	}
 	return true, "", nil
 }

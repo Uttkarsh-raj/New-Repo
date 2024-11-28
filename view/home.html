@@ -61,7 +61,7 @@
                     event.preventDefault()
                     const userId = event.target.getAttribute("data-id");
                     try {
-                        const response = await fetch(`http://localhost:3000/delete/${userId}`, {
+                        const response = await fetch(`/delete/${userId}`, {
                             method: "DELETE",
                             headers: {
                                 Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -151,7 +151,7 @@
                 };
 
                 try {
-                    const response = await fetch(`http://localhost:3000/update/${id}`, {
+                    const response = await fetch(`/update/${id}`, {
                         method: "PATCH",
                         headers: {
                             "Content-Type": "application/json",
@@ -159,9 +159,10 @@
                         },
                         body: JSON.stringify(updatedDetails),
                     });
+                    const res = await response.json()
 
                     if (!response.ok) {
-                        throw new Error(`Failed to update user with ID ${id}`);
+                        throw new Error(res.message);
                     }
 
                     alert("User updated successfully!");
@@ -170,7 +171,7 @@
                     window.location.href = "/home"; // Refresh user list
                 } catch (error) {
                     console.error("Error updating user:", error);
-                    alert("Failed to update user.");
+                    alert(error);
                 }
             });
         }
@@ -182,7 +183,7 @@
                 const token = 'Bearer ' + localStorage.getItem('token')
                 console.log(token)
                 try {
-                    const response = await fetch('http://localhost:3000/users', {
+                    const response = await fetch('/users', {
                         method: 'GET',
                         headers: {
                             'Content-Type': 'application/json',
