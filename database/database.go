@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/joho/godotenv"
+	// "github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -15,10 +15,10 @@ import (
 var Client *mongo.Client = DBInstance()
 
 func DBInstance() *mongo.Client {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading the env to set the db: ", err.Error())
-	}
+	// err := godotenv.Load()
+	// if err != nil {
+	// 	log.Fatal("Error loading the env to set the db: ", err.Error())
+	// }
 	MongoDb := os.Getenv("MONGODB_URL")
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
