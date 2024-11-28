@@ -21,7 +21,7 @@ var validate = validator.New()
 
 func SignUpUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		ctx, cancel := context.WithTimeout(context.Background(), time.Second*4)
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 		defer cancel()
 
 		var user models.User
@@ -81,7 +81,7 @@ func SignUpUser() gin.HandlerFunc {
 
 func LogInUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 		defer cancel()
 
 		var user models.User
